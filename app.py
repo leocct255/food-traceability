@@ -8,7 +8,7 @@ GANACHE_URL = "http://127.0.0.1:8545"
 
 
 CONTRACT_ADDRESS = Web3.to_checksum_address(
-    "0xfc3123e8a934EE91d5A53406bcbca0B88BA9bfF8"
+   "0x933b4Cab0b38C7367e6Ea8Bdc081B9eb813E319C"
 )
 
 
