@@ -15,8 +15,17 @@ contract FoodTraceability {
         string memory _producer,
         string memory _origin
     ) public {
+	
+
+	 // Validate that all fields are filled
+        require(bytes(_name).length > 0, "Food name is required");
+        require(bytes(_producer).length > 0, "Producer is required");
+        require(bytes(_origin).length > 0, "Origin is required");
+
+        
         uint256 id = nextBatchId;
 
+        
         batchNames[id] = _name;
         batchProducers[id] = _producer;
         batchOrigins[id] = _origin;
