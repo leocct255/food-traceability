@@ -9,7 +9,8 @@ contract FoodTraceability {
     mapping(uint256 => string) public batchProducers;
     mapping(uint256 => string) public batchOrigins;
     mapping(uint256 => uint256) public batchTimestamps;
-
+    mapping(uint256 => address) public batchOwners;
+	
     function registerBatch(
         string memory _name,
         string memory _producer,
@@ -24,6 +25,7 @@ contract FoodTraceability {
 
         
         uint256 id = nextBatchId;
+	batchOwners[id] = msg.sender;
 
         
         batchNames[id] = _name;
@@ -33,4 +35,18 @@ contract FoodTraceability {
 
         nextBatchId++;
     }
+
+function transferBatch(uint256 _batchId, address _newOwner) public {
+    require(_batchId > 0 && _batchId < nextBatchId, "Batch does not exist");
+
+    require(
+        batchOwners[_batchId] == msg.sender,
+        "Only the current owner can transfer this batch"
+    );
+
+    require(_newOwner != address(0), "Invalid receiver address");
+    require(_newOwner != msg.sender, "Receiver must be different");
+
+    batchOwners[_batchId] = _newOwner;
+}
 }
