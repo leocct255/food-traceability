@@ -10,6 +10,16 @@ contract FoodTraceability {
     mapping(uint256 => string) public batchOrigins;
     mapping(uint256 => uint256) public batchTimestamps;
     mapping(uint256 => address) public batchOwners;
+
+  event BatchTransferred(
+  	 uint256 indexed batchId,
+   	 address indexed from,
+   	 address indexed to,
+   	 uint256 timestamp
+);
+
+
+
 	
     function registerBatch(
         string memory _name,
@@ -48,5 +58,13 @@ function transferBatch(uint256 _batchId, address _newOwner) public {
     require(_newOwner != msg.sender, "Receiver must be different");
 
     batchOwners[_batchId] = _newOwner;
+
+
+emit BatchTransferred(
+    _batchId,
+    msg.sender,
+    _newOwner,
+    block.timestamp
+);
 }
 }
