@@ -8,7 +8,7 @@ GANACHE_URL = "http://127.0.0.1:8545"
 
 
 CONTRACT_ADDRESS = Web3.to_checksum_address(
-   "0xB17564cd82c5e4db699FA1fD77e075fB8dCE03f3"
+   "0x6edE30a1707E23BAcAf26636C28f11Cf97ed2e52"
 )
 
 
@@ -67,6 +67,29 @@ def register_batch(contract, account):
         print("Registration failed.")
 
 
+def transfer_batch(contract, account):
+    batch_id = int(input("Enter batch ID: "))
+    receiver = input("Enter receiver address: ").strip()
+
+    if not Web3.is_address(receiver):
+        print("Invalid Ethereum address.")
+        return
+
+    receiver = Web3.to_checksum_address(receiver)
+
+    print(f"Batch: {batch_id}")
+    print(f"Sender: {account}")
+    print(f"Receiver: {receiver}")
+
+    tx_hash = contract.functions.transferBatch(
+        batch_id, receiver
+            ).transact({"from": account})
+
+    receipt = contract.w3.eth.wait_for_transaction_receipt(tx_hash)
+
+    print(f"Transaction status: {receipt.status}")
+    print(f"Transaction hash: {tx_hash.hex()}")
+
 def display_batch(contract, batch_id):
     next_id = contract.functions.nextBatchId().call()
 
@@ -78,6 +101,7 @@ def display_batch(contract, batch_id):
     producer = contract.functions.batchProducers(batch_id).call()
     origin = contract.functions.batchOrigins(batch_id).call()
     timestamp = contract.functions.batchTimestamps(batch_id).call()
+    owner = contract.functions.batchOwners(batch_id).call()
 
     date = datetime.fromtimestamp(
         timestamp, timezone.utc
@@ -87,6 +111,7 @@ def display_batch(contract, batch_id):
     print(f"Food: {name}")
     print(f"Producer: {producer}")
     print(f"Origin: {origin}")
+    print(f"Current owner: {owner}")
     print(f"Registered at: {date}")
 
 
@@ -115,6 +140,7 @@ def main():
         print("1 - Register food batch")
         print("2 - View batch by ID")
         print("3 - List all batches")
+        print("4 - Transfer Batch")
         print("0 - Exit")
 
         choice = input("Choose an option: ").strip()
@@ -139,6 +165,9 @@ def main():
                 list_batches(contract)
             except Exception as error:
                 print("Could not list batches:", error)
+        
+        elif choice == "4":
+                transfer_batch(contract, account)
 
         elif choice == "0":
             print("Goodbye!")
