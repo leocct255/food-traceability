@@ -97,16 +97,16 @@ def transfer_batch(contract, account):
     except (ContractLogicError, Web3RPCError, ValueError) as error:
         message = str(error)
 
-    if "Only the current owner" in message:
-        print("Transfer rejected: You are not the current owner.")
-    elif "Batch does not exist" in message:
-        print("Transfer rejected: Batch does not exist.")
-    elif "Receiver must be different" in message:
-        print("Transfer rejected: Receiver must be different.")
-    elif "Invalid receiver address" in message:
-        print("Transfer rejected: Invalid receiver address.")
-    else:
-        print(f"Transfer failed: {error}")
+        if "Only the current owner" in message:
+            print("Transfer rejected: You are not the current owner.")
+        elif "Batch does not exist" in message:
+            print("Transfer rejected: Batch does not exist.")
+        elif "Receiver must be different" in message:
+            print("Transfer rejected: Receiver must be different.")
+        elif "Invalid receiver address" in message:
+            print("Transfer rejected: Invalid receiver address.")
+        else:
+            print(f"Transfer failed: {error}")
 
 
 def show_transfer_history(contract, batch_id):

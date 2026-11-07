@@ -68,6 +68,20 @@ The application provides four options:
 1. Register a food batch.
 2. View a batch by ID.
 3. List all registered batches.
+4. Trasfer a batch to another blockchain account.
+5. View the transfer history of a batch.
 0. Exit.
 
 **Note:** Ganache must remain running while using the application. Without blockchain persistence, restarting Ganache requires deploying the contract again.
+
+## Features
+
+- Register food batches with name, producer, and origin.
+- Store registration timestamps on the blockchain.
+- View individual batches by ID.
+- List all registered batches.
+- Track the current owner of each batch.
+- Transfer batches between blockchain accounts.
+- Restrict transfers to the current batch owner.
+- View transfer history, including sender, receiver, and timestamp.
+- Interact with the Solidity smart contract using a Python CLI.
