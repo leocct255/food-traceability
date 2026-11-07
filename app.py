@@ -8,7 +8,7 @@ GANACHE_URL = "http://127.0.0.1:8545"
 
 
 CONTRACT_ADDRESS = Web3.to_checksum_address(
-   "0x6edE30a1707E23BAcAf26636C28f11Cf97ed2e52"
+   "0x550c16bE09035721E17380042d7998Bf3697C00B"
 )
 
 
@@ -109,6 +109,29 @@ def transfer_batch(contract, account):
         print(f"Transfer failed: {error}")
 
 
+def show_transfer_history(contract, batch_id):
+    events = contract.events.BatchTransferred.get_logs(
+        from_block=0,
+        argument_filters={"batchId": batch_id}
+    )
+
+    if not events:
+        print("No transfers found for this batch.")
+        return
+
+    for event in events:
+        args = event["args"]
+        print(f"From: {args['from']}")
+        print(f"To: {args['to']}")
+
+        transfer_date = datetime.fromtimestamp(
+            args["timestamp"], tz=timezone.utc
+        ).strftime("%d-%m-%Y %H:%M:%S UTC")
+
+        print(f"Transferred at: {transfer_date}")
+        print("--------------------")
+
+
 
 def display_batch(contract, batch_id):
     next_id = contract.functions.nextBatchId().call()
@@ -161,6 +184,7 @@ def main():
         print("2 - View batch by ID")
         print("3 - List all batches")
         print("4 - Transfer Batch")
+        print("5 - View Transfer History")
         print("0 - Exit")
 
         choice = input("Choose an option: ").strip()
@@ -188,6 +212,10 @@ def main():
         
         elif choice == "4":
                 transfer_batch(contract, account)
+
+        elif choice == "5":
+                 batch_id = int(input("Enter batch ID: "))
+                 show_transfer_history(contract, batch_id)        
 
         elif choice == "0":
             print("Goodbye!")
