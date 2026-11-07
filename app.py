@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from datetime import datetime, timezone
 from web3 import Web3
-
+from web3.exceptions import ContractLogicError, Web3RPCError
 
 GANACHE_URL = "http://127.0.0.1:8545"
 
@@ -81,14 +81,34 @@ def transfer_batch(contract, account):
     print(f"Sender: {account}")
     print(f"Receiver: {receiver}")
 
-    tx_hash = contract.functions.transferBatch(
-        batch_id, receiver
-            ).transact({"from": account})
+    try:
+        tx_hash = contract.functions.transferBatch(
+            batch_id, receiver
+        ).transact({"from": account})
 
-    receipt = contract.w3.eth.wait_for_transaction_receipt(tx_hash)
+        receipt = contract.w3.eth.wait_for_transaction_receipt(tx_hash)
 
-    print(f"Transaction status: {receipt.status}")
-    print(f"Transaction hash: {tx_hash.hex()}")
+        if receipt.status == 1:
+            print("Transfer completed successfully!")
+            print(f"Transaction hash: {tx_hash.hex()}")
+        else:
+            print("Transfer failed.")
+
+    except (ContractLogicError, Web3RPCError, ValueError) as error:
+        message = str(error)
+
+    if "Only the current owner" in message:
+        print("Transfer rejected: You are not the current owner.")
+    elif "Batch does not exist" in message:
+        print("Transfer rejected: Batch does not exist.")
+    elif "Receiver must be different" in message:
+        print("Transfer rejected: Receiver must be different.")
+    elif "Invalid receiver address" in message:
+        print("Transfer rejected: Invalid receiver address.")
+    else:
+        print(f"Transfer failed: {error}")
+
+
 
 def display_batch(contract, batch_id):
     next_id = contract.functions.nextBatchId().call()
